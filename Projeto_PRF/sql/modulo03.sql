@@ -376,3 +376,62 @@ select * from acidentes_prf_2025;
 
 select * from acidentes_prf_2025
     where acidente_fatal is true; 
+
+select sum(acidente_fatal) as 'Total de Acidentes Fatais'
+    from acidentes_prf_2025;
+
+select sum(acidente_fatal) as 'Total de Acidentes Fatais'
+    from acidentes_prf_2025
+    where uf = 'PE';
+
+SELECT * FROM vw_acidentes_por_tipo
+    WHERE "Total de Mortos" >= 100 
+    ORDER BY "Taxa de Acidentes Fatais" DESC;
+
+SELECT tipo_acidente as "Tipo de Acidente",
+    COUNT(id) as "Total de Acidentes",
+    COUNT(mortos) FILTER (WHERE mortos >= 1) AS "Total de Acidentes Fatais",
+    SUM(mortos) AS "Total de Mortos",
+    replace(printf('%.2f%%', ((COUNT(mortos) FILTER (WHERE mortos >= 1) * 100.0) / count(id))), '.', ',') as "Taxa de Acidentes Fatais"
+FROM acidentes_prf_2025
+GROUP BY tipo_acidente
+HAVING sum(mortos) >= 100
+ORDER BY (COUNT(mortos) FILTER (WHERE mortos >= 1) * 100.0) / count(id) desc;
+
+SELECT * FROM vw_acidentes_por_tipo
+    WHERE "Total de Mortos" >= 100 
+    ORDER BY "Taxa de Acidentes Fatais" DESC;
+
+
+SELECT uf as "Estado", municipio as "Municipio",
+    COUNT(id) as "Total de Acidentes",
+    COUNT(mortos) FILTER (WHERE mortos >= 1) AS "Total de Acidentes Fatais",
+    SUM(mortos) AS "Total de Mortos",
+    replace(printf('%.2f%%', ((COUNT(mortos) FILTER (WHERE mortos >= 1) * 100.0) / count(id))), '.', ',') as "Taxa de Acidentes Fatais"
+FROM acidentes_prf_2025
+GROUP BY uf, municipio
+ORDER BY (COUNT(mortos) FILTER (WHERE mortos >= 1) * 100.0) / count(id) desc;
+
+CREATE or replace view vw_acidentes_por_municipio AS
+SELECT uf as "Estado", municipio as "Municipio",
+    COUNT(id) as "Total de Acidentes",
+    COUNT(mortos) FILTER (WHERE mortos >= 1) AS "Total de Acidentes Fatais",
+    SUM(mortos) AS "Total de Mortos",
+    replace(printf('%.2f%%', ((COUNT(mortos) FILTER (WHERE mortos >= 1) * 100.0) / count(id))), '.', ',') as "Taxa de Acidentes Fatais"
+FROM acidentes_prf_2025
+GROUP BY uf, municipio
+ORDER BY (COUNT(mortos) FILTER (WHERE mortos >= 1) * 100.0) / count(id) desc;
+
+
+select * from vw_acidentes_por_municipio
+    WHERE "Total de Mortos" >= 20;
+
+Select sum(acidente_fatal)/count(id) as "Taxa Global"
+    from acidentes_prf_2025;
+
+
+SELECT 
+    (SUM(acidente_fatal) * 100.0) / COUNT(id) AS "Taxa Global (%)"
+FROM acidentes_prf_2025;
+
+
